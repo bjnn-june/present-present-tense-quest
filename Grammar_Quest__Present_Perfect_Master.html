@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grammar Quest: Present Perfect Master</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            purple: '#6C5CE7',
+                            pink: '#FD79A8',
+                            blue: '#0984E3',
+                            green: '#00B894',
+                            yellow: '#FDCB6E',
+                            orange: '#E17055',
+                            dark: '#2D3436',
+                            card: '#1E1B4B'
+                        }
+                    },
+                    fontFamily: {
+                        fredoka: ['Fredoka', 'sans-serif'],
+                        nunito: ['Nunito', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #311042 100%);
+            min-height: 100vh;
+            color: #f8fafc;
+            user-select: none;
+        }
+        .heading-font {
+            font-family: 'Fredoka', sans-serif;
+        }
+        .glass-panel {
+            background: rgba(30, 27, 75, 0.7);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+        .glass-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .glass-btn:hover:not(:disabled) {
+            background: rgba(255, 255, 255, 0.18);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(108, 92, 231, 0.3);
+        }
+        .glass-btn:active:not(:disabled) {
+            transform: translateY(1px);
+        }
+        .game-card {
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5);
+        }
+        /* Pulse Animation */
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 15px rgba(108, 92, 231, 0.4); }
+            50% { box-shadow: 0 0 30px rgba(108, 92, 231, 0.8); }
+        }
+        .glow-active {
+            animation: pulse-glow 2s infinite;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.6);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(108, 92, 231, 0.5);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(108, 92, 231, 0.8);
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen justify-between overflow-x-hidden">
+
+    <!-- TOP BAR / HEADER -->
+    <header class="w-full px-4 py-3 glass-panel sticky top-0 z-50 flex items-center justify-between shadow-lg">
+        <div class="flex items-center space-x-3 cursor-pointer" onclick="game.showHome()">
+            <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-brand-purple to-brand-pink flex items-center justify-center text-xl font-bold shadow-lg shadow-purple-500/30">
+                <i class="fa-solid font-bold fa-bolt text-yellow-300"></i>
+            </div>
+            <div>
+                <h1 class="heading-font text-xl md:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-300 via-pink-300 to-amber-200">
+                    Grammar Quest
+                </h1>
+                <p class="text-xs text-purple-300/70 font-semibold tracking-wide hidden sm:block">PRESENT PERFECT TENSE</p>
+            </div>
+        </div>
+
+        <!-- STATS BAR -->
+        <div class="flex items-center space-x-3 md:space-x-6">
+            <!-- Streak -->
+            <div class="flex items-center space-x-1.5 bg-amber-500/10 border border-amber-500/30 px-3 py-1.5 rounded-xl">
+                <i class="fa-solid fa-fire text-amber-400 animate-bounce"></i>
+                <span id="streak-val" class="font-bold text-amber-300 text-sm md:text-base">0</span>
+            </div>
+            <!-- Score -->
+            <div class="flex items-center space-x-1.5 bg-purple-500/10 border border-purple-500/30 px-3 py-1.5 rounded-xl">
+                <i class="fa-solid fa-star text-purple-400"></i>
+                <span id="score-val" class="font-bold text-purple-200 text-sm md:text-base">0</span>
+            </div>
+            <!-- Sound Toggle -->
+            <button id="sound-btn" onclick="audio.toggleSound()" class="w-9 h-9 rounded-xl glass-btn flex items-center justify-center text-purple-200 hover:text-white" title="Toggle Sound">
+                <i id="sound-icon" class="fa-solid fa-volume-high"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- MAIN GAME CONTAINER -->
+    <main class="container mx-auto px-4 py-6 max-w-4xl flex-grow flex flex-col justify-center">
+
+        <!-- VIEW: MENU / HOME -->
+        <div id="view-home" class="space-y-6">
+            <!-- Hero Header -->
+            <div class="text-center space-y-3 my-4">
+                <span class="px-3 py-1 rounded-full text-xs font-semibold bg-purple-500/20 text-purple-300 border border-purple-500/30 uppercase tracking-widest">Interactive Grammar Academy</span>
+                <h2 class="heading-font text-3xl md:text-5xl font-extrabold text-white tracking-wide">
+                    Master the Present Perfect
+                </h2>
+                <p class="text-slate-300 max-w-lg mx-auto text-sm md:text-base">
+                    Level up your English grammar skills with fast-paced challenges, interactive sentence builders, and instant visual feedback!
+                </p>
+            </div>
+
+            <!-- Mode Selector Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+                
+                <!-- Mode 1 -->
+                <div onclick="game.startMode('participle')" class="game-card glass-panel p-5 rounded-2xl hover:border-purple-400/60 cursor-pointer transform hover:-translate-y-1 transition duration-300 group flex flex-col justify-between relative overflow-hidden">
+                    <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-purple-600/10 rounded-full blur-xl group-hover:bg-purple-600/20 transition"></div>
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="w-12 h-12 rounded-xl bg-purple-500/20 border border-purple-500/40 flex items-center justify-center text-purple-300 group-hover:scale-110 transition">
+                                <i class="fa-solid fa-wand-magic-sparkles text-xl"></i>
+                            </span>
+                            <span class="text-xs font-bold text-purple-300 bg-purple-950/60 px-2.5 py-1 rounded-md border border-purple-800/50">Mode 1</span>
+                        </div>
+                        <h3 class="heading-font text-xl font-bold text-white group-hover:text-purple-300 transition">Past Participle Hunt</h3>
+                        <p class="text-slate-400 text-xs md:text-sm mt-1">Convert base verbs into their correct irregular & regular past participle forms.</p>
+                    </div>
+                    <div class="mt-4 flex items-center text-xs font-bold text-purple-400 group-hover:text-purple-300">
+                        <span>PLAY NOW</span>
+                        <i class="fa-solid fa-arrow-right ml-2 group-hover:translate-x-1 transition"></i>
+                    </div>
+                </div>
+
+                <!-- Mode 2 -->
+                <div onclick="game.startMode('builder')" class="game-card glass-panel p-5 rounded-2xl hover:border-pink-400/60 cursor-pointer transform hover:-translate-y-1 transition duration-300 group flex flex-col justify-between relative overflow-hidden">
+                    <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-pink-600/10 rounded-full blur-xl group-hover:bg-pink-600/20 transition"></div>
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="w-12 h-12 rounded-xl bg-pink-500/20 border border-pink-500/40 flex items-center justify-center text-pink-300 group-hover:scale-110 transition">
+                                <i class="fa-solid fa-puzzle-piece text-xl"></i>
+                            </span>
+                            <span class="text-xs font-bold text-pink-300 bg-pink-950/60 px-2.5 py-1 rounded-md border border-pink-800/50">Mode 2</span>
+                        </div>
+                        <h3 class="heading-font text-xl font-bold text-white group-hover:text-pink-300 transition">Sentence Builder</h3>
+                        <p class="text-slate-400 text-xs md:text-sm mt-1">Construct grammatically flawless sentences using Have/Has + Past Participle.</p>
+                    </div>
+                    <div class="mt-4 flex items-center text-xs font-bold text-pink-400 group-hover:text-pink-300">
+                        <span>PLAY NOW</span>
+                        <i class="fa-solid fa-arrow-right ml-2 group-hover:translate-x-1 transition"></i>
+                    </div>
+                </div>
+
+                <!-- Mode 3 -->
+                <div onclick="game.startMode('forsince')" class="game-card glass-panel p-5 rounded-2xl hover:border-emerald-400/60 cursor-pointer transform hover:-translate-y-1 transition duration-300 group flex flex-col justify-between relative overflow-hidden">
+                    <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-emerald-600/10 rounded-full blur-xl group-hover:bg-emerald-600/20 transition"></div>
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="w-12 h-12 rounded-xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-300 group-hover:scale-110 transition">
+                                <i class="fa-solid fa-hourglass-half text-xl"></i>
+                            </span>
+                            <span class="text-xs font-bold text-emerald-300 bg-emerald-950/60 px-2.5 py-1 rounded-md border border-emerald-800/50">Mode 3</span>
+                        </div>
+                        <h3 class="heading-font text-xl font-bold text-white group-hover:text-emerald-300 transition">'For' vs 'Since' Duel</h3>
+                        <p class="text-slate-400 text-xs md:text-sm mt-1">Classify time expressions fast: Durations (For) vs. Starting Points (Since).</p>
+                    </div>
+                    <div class="mt-4 flex items-center text-xs font-bold text-emerald-400 group-hover:text-emerald-300">
+                        <span>PLAY NOW</span>
+                        <i class="fa-solid fa-arrow-right ml-2 group-hover:translate-x-1 transition"></i>
+                    </div>
+                </div>
+
+                <!-- Mode 4 -->
+                <div onclick="game.startMode('adverbs')" class="game-card glass-panel p-5 rounded-2xl hover:border-amber-400/60 cursor-pointer transform hover:-translate-y-1 transition duration-300 group flex flex-col justify-between relative overflow-hidden">
+                    <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-amber-600/10 rounded-full blur-xl group-hover:bg-amber-600/20 transition"></div>
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="w-12 h-12 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-300 group-hover:scale-110 transition">
+                                <i class="fa-solid fa-clock-rotate-left text-xl"></i>
+                            </span>
+                            <span class="text-xs font-bold text-amber-300 bg-amber-950/60 px-2.5 py-1 rounded-md border border-amber-800/50">Mode 4</span>
+                        </div>
+                        <h3 class="heading-font text-xl font-bold text-white group-hover:text-amber-300 transition">Adverb Quest</h3>
+                        <p class="text-slate-400 text-xs md:text-sm mt-1">Master contextual usage of Ever, Never, Already, and Yet in scenarios.</p>
+                    </div>
+                    <div class="mt-4 flex items-center text-xs font-bold text-amber-400 group-hover:text-amber-300">
+                        <span>PLAY NOW</span>
+                        <i class="fa-solid fa-arrow-right ml-2 group-hover:translate-x-1 transition"></i>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Quick Rule Cheat-Sheet Accordion -->
+            <div class="glass-panel p-5 rounded-2xl space-y-3 border-indigo-500/20">
+                <button onclick="game.toggleCheatSheet()" class="w-full flex items-center justify-between text-left focus:outline-none">
+                    <span class="heading-font font-bold text-lg text-purple-200 flex items-center">
+                        <i class="fa-solid fa-lightbulb text-yellow-400 mr-2"></i> Quick Grammar Guide
+                    </span>
+                    <i id="cheat-chevron" class="fa-solid fa-chevron-down text-slate-400 transition-transform duration-300"></i>
+                </button>
+                <div id="cheat-sheet-content" class="hidden text-xs md:text-sm text-slate-300 space-y-3 pt-2 border-t border-slate-700/50">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div class="bg-indigo-950/40 p-3 rounded-xl border border-indigo-800/30">
+                            <strong class="text-purple-300 block mb-1">Structure:</strong>
+                            <code class="text-amber-300">Subject + HAVE / HAS + Past Participle</code>
+                            <p class="mt-1 text-slate-400 text-xs">Use <b>has</b> for He/She/It; <b>have</b> for I/You/We/They.</p>
+                        </div>
+                        <div class="bg-indigo-950/40 p-3 rounded-xl border border-indigo-800/30">
+                            <strong class="text-emerald-300 block mb-1">For vs. Since:</strong>
+                            <p class="text-xs"><b>FOR:</b> Duration of time (e.g., 3 hours, 5 years, a long time).</p>
+                            <p class="text-xs"><b>SINCE:</b> Specific starting point (e.g., 2010, Monday, 8:00 AM).</p>
+                        </div>
+                        <div class="bg-indigo-950/40 p-3 rounded-xl border border-indigo-800/30">
+                            <strong class="text-pink-300 block mb-1">Ever & Never:</strong>
+                            <p class="text-xs"><b>EVER:</b> In questions ("Have you ever visited London?").</p>
+                            <p class="text-xs"><b>NEVER:</b> Negative statements ("I have never seen snow").</p>
+                        </div>
+                        <div class="bg-indigo-950/40 p-3 rounded-xl border border-indigo-800/30">
+                            <strong class="text-amber-300 block mb-1">Already & Yet:</strong>
+                            <p class="text-xs"><b>ALREADY:</b> Sooner than expected (mid-position: "has already finished").</p>
+                            <p class="text-xs"><b>YET:</b> Expected event, end of questions/negatives ("not yet").</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW: GAME ARENA -->
+        <div id="view-game" class="hidden space-y-5">
+            <!-- Progress & Status Header -->
+            <div class="glass-panel p-4 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-3">
+                <div class="flex items-center space-x-3 w-full md:w-auto justify-between md:justify-start">
+                    <button onclick="game.showHome()" class="glass-btn px-3 py-1.5 rounded-xl text-xs font-bold text-slate-300 hover:text-white flex items-center">
+                        <i class="fa-solid fa-house mr-1.5"></i> Exit
+                    </button>
+                    <span id="current-mode-title" class="heading-font text-base md:text-lg font-bold text-purple-200">
+                        Past Participle Hunt
+                    </span>
+                </div>
+                
+                <!-- Progress Bar Container -->
+                <div class="w-full md:w-1/2 flex items-center space-x-3">
+                    <div class="w-full bg-slate-900/60 rounded-full h-3 border border-slate-700 overflow-hidden">
+                        <div id="game-progress-bar" class="bg-gradient-to-r from-purple-500 to-pink-500 h-full w-0 transition-all duration-300"></div>
+                    </div>
+                    <span id="question-counter" class="text-xs font-bold text-slate-400 whitespace-nowrap">1/10</span>
+                </div>
+            </div>
+
+            <!-- Dynamic Question Card -->
+            <div id="question-card" class="game-card glass-panel p-6 md:p-8 rounded-3xl min-h-[340px] flex flex-col justify-between relative overflow-hidden">
+                
+                <!-- Inner dynamic content filled by JS -->
+                <div id="game-content" class="w-full space-y-6">
+                    <!-- Dynamic Question UI goes here -->
+                </div>
+
+                <!-- Explanation Banner (Initially Hidden) -->
+                <div id="feedback-banner" class="hidden mt-6 p-4 rounded-2xl text-sm transition-all duration-300 transform translate-y-2">
+                    <div class="flex items-start space-x-3">
+                        <span id="feedback-icon" class="text-2xl mt-0.5"></span>
+                        <div class="flex-grow">
+                            <h4 id="feedback-title" class="heading-font font-bold text-base"></h4>
+                            <p id="feedback-desc" class="text-slate-200 text-xs md:text-sm mt-0.5"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Button Container -->
+                <div class="mt-6 flex justify-end">
+                    <button id="next-btn" onclick="game.nextQuestion()" class="hidden bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-extrabold px-8 py-3 rounded-2xl shadow-lg shadow-purple-600/40 text-base tracking-wide transform active:scale-95 transition">
+                        Next Question <i class="fa-solid fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW: RESULTS / SUMMARY -->
+        <div id="view-results" class="hidden space-y-6">
+            <div class="glass-panel p-6 md:p-8 rounded-3xl text-center space-y-6 relative overflow-hidden">
+                <div class="space-y-2">
+                    <span id="result-badge" class="px-4 py-1.5 rounded-full text-xs font-extrabold bg-purple-500/20 text-purple-300 border border-purple-500/30 uppercase tracking-widest">
+                        Challenge Completed!
+                    </span>
+                    <h2 id="result-headline" class="heading-font text-3xl md:text-5xl font-extrabold text-white">
+                        Grammar Champion!
+                    </h2>
+                </div>
+
+                <!-- Score Circle / Stats -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 py-2 max-w-xl mx-auto">
+                    <div class="glass-panel p-4 rounded-2xl border-purple-500/30 flex flex-col items-center">
+                        <span class="text-xs font-semibold text-slate-400">ACCURACY</span>
+                        <span id="res-accuracy" class="heading-font text-3xl font-extrabold text-pink-400 mt-1">0%</span>
+                    </div>
+                    <div class="glass-panel p-4 rounded-2xl border-purple-500/30 flex flex-col items-center">
+                        <span class="text-xs font-semibold text-slate-400">TOTAL SCORE</span>
+                        <span id="res-score" class="heading-font text-3xl font-extrabold text-purple-300 mt-1">0</span>
+                    </div>
+                    <div class="glass-panel p-4 rounded-2xl border-purple-500/30 flex flex-col items-center">
+                        <span class="text-xs font-semibold text-slate-400">BEST STREAK</span>
+                        <span id="res-streak" class="heading-font text-3xl font-extrabold text-amber-300 mt-1">0</span>
+                    </div>
+                </div>
+
+                <!-- Detailed Mistakes Review -->
+                <div class="text-left space-y-3 pt-4 border-t border-slate-700/50">
+                    <h3 class="heading-font text-lg font-bold text-slate-200 flex items-center">
+                        <i class="fa-solid fa-list-check text-purple-400 mr-2"></i> Performance Review
+                    </h3>
+                    <div id="review-list" class="max-h-60 overflow-y-auto space-y-2.5 pr-2">
+                        <!-- Filled dynamically -->
+                    </div>
+                </div>
+
+                <!-- Buttons -->
+                <div class="flex flex-col sm:flex-row justify-center gap-3 pt-4">
+                    <button onclick="game.retryMode()" class="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-extrabold px-6 py-3 rounded-2xl shadow-lg shadow-purple-600/30 text-sm tracking-wide">
+                        <i class="fa-solid fa-rotate-right mr-2"></i> Try Again
+                    </button>
+                    <button onclick="game.showHome()" class="glass-btn px-6 py-3 rounded-2xl font-extrabold text-sm text-slate-200 hover:text-white">
+                        <i class="fa-solid fa-grid-2 mr-2"></i> Main Menu
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="w-full text-center py-4 text-xs text-slate-500 glass-panel mt-6">
+        <p>Interactive Grammar Quest &copy; Present Perfect Master Edition</p>
+    </footer>
+
+    <!-- JAVASCRIPT GAME LOGIC -->
+    <script>
+        // --- WEB AUDIO API SOUND SYNTHESIZER ---
+        class AudioController {
+            constructor() {
+                this.enabled = true;
+                this.ctx = null;
+            }
+
+            init() {
+                if (!this.ctx) {
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    if (AudioContext) {
+                        this.ctx = new AudioContext();
+                    }
+                }
+            }
+
+            playTone(freq, type, duration, startVol = 0.2) {
+                if (!this.enabled) return;
+                this.init();
+                if (!this.ctx) return;
+
+                try {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = type;
+                    osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+                    
+                    gain.gain.setValueAtTime(startVol, this.ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
+
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+
+                    osc.start();
+                    osc.stop(this.ctx.currentTime + duration);
+                } catch(e) { console.log(e); }
+            }
+
+            playCorrect() {
+                if (!this.enabled) return;
+                this.playTone(523.25, 'sine', 0.15, 0.2); // C5
+                setTimeout(() => this.playTone(659.25, 'sine', 0.15, 0.2), 80); // E5
+                setTimeout(() => this.playTone(783.99, 'sine', 0.3, 0.25), 160); // G5
+            }
+
+            playWrong() {
+                if (!this.enabled) return;
+                this.playTone(220, 'sawtooth', 0.2, 0.2); // A3
+                setTimeout(() => this.playTone(180, 'sawtooth', 0.3, 0.2), 150);
+            }
+
+            playClick() {
+                if (!this.enabled) return;
+                this.playTone(400, 'triangle', 0.05, 0.1);
+            }
+
+            playFanfare() {
+                if (!this.enabled) return;
+                const notes = [523.25, 659.25, 783.99, 1046.50];
+                notes.forEach((freq, i) => {
+                    setTimeout(() => this.playTone(freq, 'triangle', 0.25, 0.2), i * 120);
+                });
+            }
+
+            toggleSound() {
+                this.enabled = !this.enabled;
+                const icon = document.getElementById('sound-icon');
+                if (this.enabled) {
+                    icon.className = 'fa-solid fa-volume-high';
+                } else {
+                    icon.className = 'fa-solid fa-volume-xmark text-slate-500';
+                }
+            }
+        }
+
+        const audio = new AudioController();
+
+        // --- GAME QUESTION DATASETS ---
+        const GAME_DATA = {
+            participle: [
+                { base: "eat", answer: "eaten", options: ["eaten", "ate", "eated", "eating"], explanation: "'Eat' is an irregular verb: Eat -> Ate -> Eaten." },
+                { base: "go", answer: "gone", options: ["went", "gone", "goed", "going"], explanation: "'Go' transforms into 'gone' in the past participle form." },
+                { base: "write", answer: "written", options: ["wrote", "writed", "written", "writing"], explanation: "'Write' is irregular: Write -> Wrote -> Written." },
+                { base: "see", answer: "seen", options: ["saw", "seen", "seed", "seeing"], explanation: "'See' becomes 'seen' in the past participle." },
+                { base: "take", answer: "taken", options: ["took", "taked", "taken", "taking"], explanation: "'Take' transforms into 'taken'." },
+                { base: "break", answer: "broken", options: ["broke", "broked", "broken", "breaking"], explanation: "'Break' is irregular: Break -> Broke -> Broken." },
+                { base: "fly", answer: "flown", options: ["flew", "flied", "flown", "flying"], explanation: "'Fly' transforms into 'flown' in the past participle." },
+                { base: "speak", answer: "spoken", options: ["spoke", "speaked", "spoken", "speaking"], explanation: "'Speak' becomes 'spoken'." },
+                { base: "buy", answer: "bought", options: ["buyed", "bought", "boughten", "buying"], explanation: "'Buy' transforms into 'bought' in both past tense and past participle." },
+                { base: "do", answer: "done", options: ["did", "dided", "done", "doing"], explanation: "'Do' is irregular: Do -> Did -> Done." }
+            ],
+            builder: [
+                {
+                    prompt: "Complete: She ___ (visit) Paris three times.",
+                    options: ["has visited", "have visited", "visited", "has visit"],
+                    answer: "has visited",
+                    explanation: "Singular subject 'She' requires 'has' + regular past participle 'visited'."
+                },
+                {
+                    prompt: "Complete: They ___ (finish) their homework already.",
+                    options: ["have finished", "has finished", "finished", "have finish"],
+                    answer: "have finished",
+                    explanation: "Plural subject 'They' requires 'have' + regular past participle 'finished'."
+                },
+                {
+                    prompt: "Complete: I ___ (know) Alex for ten years.",
+                    options: ["have known", "has known", "have knew", "knowed"],
+                    answer: "have known",
+                    explanation: "'I' takes 'have' + past participle 'known' (from 'know')."
+                },
+                {
+                    prompt: "Complete: The train ___ (leave) the station.",
+                    options: ["has left", "have left", "has leave", "is left"],
+                    answer: "has left",
+                    explanation: "'The train' (it) takes 'has' + irregular past participle 'left'."
+                },
+                {
+                    prompt: "Complete: We ___ (not / see) this movie yet.",
+                    options: ["have not seen", "has not seen", "have not saw", "didn't saw"],
+                    answer: "have not seen",
+                    explanation: "'We' takes 'have not' + past participle 'seen'."
+                },
+                {
+                    prompt: "Complete: He ___ (lose) his house keys.",
+                    options: ["has lost", "have lost", "has losed", "is lost"],
+                    answer: "has lost",
+                    explanation: "'He' requires 'has' + irregular past participle 'lost'."
+                },
+                {
+                    prompt: "Complete: ___ you ever ___ (eat) sushi?",
+                    options: ["Have / eaten", "Has / eaten", "Have / ate", "Did / eat"],
+                    answer: "Have / eaten",
+                    explanation: "Questions for 'you' use 'Have' + subject + past participle 'eaten'."
+                },
+                {
+                    prompt: "Complete: My sister ___ (clean) her room.",
+                    options: ["has cleaned", "have cleaned", "is cleaned", "has clean"],
+                    answer: "has cleaned",
+                    explanation: "'My sister' (she) takes 'has' + regular past participle 'cleaned'."
+                }
+            ],
+            forsince: [
+                { time: "2 hours", answer: "for", explanation: "'2 hours' represents a duration/length of time, so use FOR." },
+                { time: "2015", answer: "since", explanation: "'2015' is a specific starting point in time, so use SINCE." },
+                { time: "last Monday", answer: "since", explanation: "'last Monday' marks a specific starting point, so use SINCE." },
+                { time: "a long time", answer: "for", explanation: "'a long time' expresses a duration, so use FOR." },
+                { time: "8:00 AM", answer: "since", explanation: "'8:00 AM' is a precise point in time when the action started, so use SINCE." },
+                { time: "three days", answer: "for", explanation: "'three days' is a period/duration of time, so use FOR." },
+                { time: "I was a child", answer: "since", explanation: "'I was a child' specifies a time point in the past, so use SINCE." },
+                { time: "several months", answer: "for", explanation: "'several months' is a span of time, so use FOR." },
+                { time: "Christmas", answer: "since", explanation: "'Christmas' is a specific date/moment in time, so use SINCE." },
+                { time: "five minutes", answer: "for", explanation: "'five minutes' represents a measured duration, so use FOR." }
+            ],
+            adverbs: [
+                {
+                    sentence: "Have you ___ ridden a camel in the desert?",
+                    options: ["ever", "never", "yet", "already"],
+                    answer: "ever",
+                    explanation: "Use 'EVER' in questions to ask about experiences at any time up to now."
+                },
+                {
+                    sentence: "I have ___ been to Asia, but I want to go someday.",
+                    options: ["never", "ever", "yet", "already"],
+                    answer: "never",
+                    explanation: "Use 'NEVER' in affirmative sentences to state you have zero experience with something."
+                },
+                {
+                    sentence: "She hasn't finished her project ___.",
+                    options: ["yet", "already", "ever", "never"],
+                    answer: "yet",
+                    explanation: "Use 'YET' at the end of negative sentences or questions to show an expected action hasn't happened yet."
+                },
+                {
+                    sentence: "Don't worry, I have ___ paid the electricity bill.",
+                    options: ["already", "yet", "ever", "never"],
+                    answer: "already",
+                    explanation: "Use 'ALREADY' to emphasize that an action was completed sooner than expected."
+                },
+                {
+                    sentence: "Has the teacher arrived ___?",
+                    options: ["yet", "already", "ever", "never"],
+                    answer: "yet",
+                    explanation: "'YET' usually goes at the end of questions asking if something expected has happened."
+                },
+                {
+                    sentence: "We have ___ seen that movie twice this week!",
+                    options: ["already", "yet", "ever", "never"],
+                    answer: "already",
+                    explanation: "'ALREADY' indicates the action was completed before now or earlier than anticipated."
+                }
+            ]
+        };
+
+        // --- MAIN GAME ENGINE ---
+        class GameEngine {
+            constructor() {
+                this.currentMode = null;
+                this.questions = [];
+                this.currentIndex = 0;
+                this.score = 0;
+                this.streak = 0;
+                this.maxStreak = 0;
+                this.userAnswers = [];
+                this.answered = false;
+            }
+
+            showHome() {
+                audio.playClick();
+                document.getElementById('view-home').classList.remove('hidden');
+                document.getElementById('view-game').classList.add('hidden');
+                document.getElementById('view-results').classList.add('hidden');
+            }
+
+            toggleCheatSheet() {
+                audio.playClick();
+                const content = document.getElementById('cheat-sheet-content');
+                const chevron = document.getElementById('cheat-chevron');
+                content.classList.toggle('hidden');
+                chevron.classList.toggle('rotate-180');
+            }
+
+            startMode(mode) {
+                audio.playClick();
+                this.currentMode = mode;
+                // Shuffle questions for variety
+                this.questions = [...GAME_DATA[mode]].sort(() => Math.random() - 0.5);
+                this.currentIndex = 0;
+                this.score = 0;
+                this.streak = 0;
+                this.maxStreak = 0;
+                this.userAnswers = [];
+
+                this.updateHeaderStats();
+
+                // UI Mode title mapping
+                const titles = {
+                    participle: "Past Participle Hunt",
+                    builder: "Sentence Builder",
+                    forsince: "'For' vs 'Since' Duel",
+                    adverbs: "Adverb Quest"
+                };
+                document.getElementById('current-mode-title').innerText = titles[mode];
+
+                document.getElementById('view-home').classList.add('hidden');
+                document.getElementById('view-results').classList.add('hidden');
+                document.getElementById('view-game').classList.remove('hidden');
+
+                this.renderQuestion();
+            }
+
+            retryMode() {
+                if (this.currentMode) {
+                    this.startMode(this.currentMode);
+                } else {
+                    this.showHome();
+                }
+            }
+
+            updateHeaderStats() {
+                document.getElementById('score-val').innerText = this.score;
+                document.getElementById('streak-val').innerText = this.streak;
+            }
+
+            renderQuestion() {
+                this.answered = false;
+                const q = this.questions[this.currentIndex];
+                const total = this.questions.length;
+
+                // Update Progress Bar
+                const percent = ((this.currentIndex) / total) * 100;
+                document.getElementById('game-progress-bar').style.width = `${percent}%`;
+                document.getElementById('question-counter').innerText = `${this.currentIndex + 1} / ${total}`;
+
+                // Reset Feedback & Next Button
+                const feedback = document.getElementById('feedback-banner');
+                feedback.className = 'hidden mt-6 p-4 rounded-2xl text-sm transition-all duration-300';
+                document.getElementById('next-btn').classList.add('hidden');
+
+                const container = document.getElementById('game-content');
+                container.innerHTML = '';
+
+                // RENDER ACCORDING TO MODE
+                if (this.currentMode === 'participle') {
+                    this.renderParticipleUI(container, q);
+                } else if (this.currentMode === 'builder' || this.currentMode === 'adverbs') {
+                    this.renderMultipleChoiceUI(container, q);
+                } else if (this.currentMode === 'forsince') {
+                    this.renderForSinceUI(container, q);
+                }
+            }
+
+            renderParticipleUI(container, q) {
+                container.innerHTML = `
+                    <div class="text-center space-y-3">
+                        <span class="text-xs font-bold text-purple-300 uppercase tracking-widest bg-purple-900/40 px-3 py-1 rounded-full border border-purple-700/40">
+                            Transform Base Verb
+                        </span>
+                        <h3 class="heading-font text-3xl md:text-5xl font-extrabold text-white tracking-wide">
+                            "${q.base.toUpperCase()}"
+                        </h3>
+                        <p class="text-slate-300 text-sm">Select the correct Past Participle (V3) form:</p>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3 md:gap-4 max-w-lg mx-auto pt-4">
+                        ${q.options.map((opt) => `
+                            <button onclick="game.handleAnswer('${opt}')" class="option-btn glass-btn py-4 px-4 rounded-2xl heading-font font-bold text-base md:text-lg text-slate-100 hover:text-white hover:border-purple-400 focus:outline-none transition-all">
+                                ${opt}
+                            </button>
+                        `).join('')}
+                    </div>
+                `;
+            }
+
+            renderMultipleChoiceUI(container, q) {
+                const textPrompt = q.prompt || q.sentence;
+                container.innerHTML = `
+                    <div class="text-center space-y-4">
+                        <span class="text-xs font-bold text-purple-300 uppercase tracking-widest bg-purple-900/40 px-3 py-1 rounded-full border border-purple-700/40">
+                            Complete the Sentence
+                        </span>
+                        <h3 class="heading-font text-xl md:text-2xl font-bold text-white leading-relaxed px-2">
+                            ${textPrompt.replace('___', '<span class="inline-block px-3 py-0.5 bg-purple-500/20 border-b-2 border-purple-400 text-purple-200 rounded mx-1">_____</span>')}
+                        </h3>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 max-w-xl mx-auto pt-4">
+                        ${q.options.map((opt) => `
+                            <button onclick="game.handleAnswer('${opt}')" class="option-btn glass-btn py-3.5 px-4 rounded-2xl font-bold text-sm md:text-base text-slate-200 hover:text-white hover:border-purple-400 focus:outline-none transition-all text-left flex items-center justify-between">
+                                <span>${opt}</span>
+                                <i class="fa-regular fa-circle text-slate-500 text-xs"></i>
+                            </button>
+                        `).join('')}
+                    </div>
+                `;
+            }
+
+            renderForSinceUI(container, q) {
+                container.innerHTML = `
+                    <div class="text-center space-y-3">
+                        <span class="text-xs font-bold text-emerald-300 uppercase tracking-widest bg-emerald-900/40 px-3 py-1 rounded-full border border-emerald-700/40">
+                            Duration (FOR) vs Starting Point (SINCE)
+                        </span>
+                        <div class="bg-indigo-950/60 border border-indigo-800/40 p-6 rounded-2xl max-w-md mx-auto shadow-inner">
+                            <span class="text-slate-400 text-xs block mb-1">TIME EXPRESSION</span>
+                            <h3 class="heading-font text-2xl md:text-4xl font-extrabold text-amber-300">
+                                "... ${q.time}"
+                            </h3>
+                        </div>
+                        <p class="text-slate-300 text-sm">Which word fits best with this expression?</p>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4 max-w-md mx-auto pt-2">
+                        <button onclick="game.handleAnswer('for')" class="option-btn glass-btn py-5 px-6 rounded-2xl heading-font font-extrabold text-xl text-emerald-300 border-emerald-500/30 hover:border-emerald-400 hover:bg-emerald-500/20 flex flex-col items-center justify-center space-y-1 transition">
+                            <span>FOR</span>
+                            <span class="text-[10px] font-normal text-slate-300 uppercase">Duration / Period</span>
+                        </button>
+                        <button onclick="game.handleAnswer('since')" class="option-btn glass-btn py-5 px-6 rounded-2xl heading-font font-extrabold text-xl text-indigo-300 border-indigo-500/30 hover:border-indigo-400 hover:bg-indigo-500/20 flex flex-col items-center justify-center space-y-1 transition">
+                            <span>SINCE</span>
+                            <span class="text-[10px] font-normal text-slate-300 uppercase">Starting Point</span>
+                        </button>
+                    </div>
+                `;
+            }
+
+            handleAnswer(selectedOption) {
+                if (this.answered) return;
+                this.answered = true;
+
+                const q = this.questions[this.currentIndex];
+                const isCorrect = (selectedOption.toLowerCase() === q.answer.toLowerCase());
+
+                // Save review data
+                this.userAnswers.push({
+                    question: q.prompt || q.sentence || `Base Verb: "${q.base}"` || `Time: "${q.time}"`,
+                    userAns: selectedOption,
+                    correctAns: q.answer,
+                    isCorrect: isCorrect,
+                    explanation: q.explanation
+                });
+
+                const optionBtns = document.querySelectorAll('.option-btn');
+                optionBtns.forEach(btn => {
+                    btn.disabled = true;
+                    btn.classList.add('opacity-60', 'cursor-not-allowed');
+                });
+
+                const feedback = document.getElementById('feedback-banner');
+                const fbIcon = document.getElementById('feedback-icon');
+                const fbTitle = document.getElementById('feedback-title');
+                const fbDesc = document.getElementById('feedback-desc');
+
+                feedback.classList.remove('hidden');
+
+                if (isCorrect) {
+                    audio.playCorrect();
+                    this.score += 100 + (this.streak * 10);
+                    this.streak++;
+                    if (this.streak > this.maxStreak) this.maxStreak = this.streak;
+
+                    feedback.className = 'mt-6 p-4 rounded-2xl text-sm bg-emerald-500/20 border border-emerald-500/40 text-emerald-200 block animate-bounce-short';
+                    fbIcon.className = 'fa-solid fa-circle-check text-emerald-400 text-2xl';
+                    fbTitle.innerText = 'Spot On! Excellent job!';
+                    fbDesc.innerText = q.explanation;
+
+                    // Trigger mini confetti for high streak
+                    if (this.streak % 3 === 0 && typeof confetti === 'function') {
+                        confetti({
+                            particleCount: 40,
+                            spread: 60,
+                            origin: { y: 0.8 }
+                        });
+                    }
+
+                } else {
+                    audio.playWrong();
+                    this.streak = 0;
+
+                    feedback.className = 'mt-6 p-4 rounded-2xl text-sm bg-rose-500/20 border border-rose-500/40 text-rose-200 block';
+                    fbIcon.className = 'fa-solid fa-circle-xmark text-rose-400 text-2xl';
+                    fbTitle.innerText = `Not quite! Correct answer: "${q.answer}"`;
+                    fbDesc.innerText = q.explanation;
+                }
+
+                this.updateHeaderStats();
+                document.getElementById('next-btn').classList.remove('hidden');
+            }
+
+            nextQuestion() {
+                audio.playClick();
+                this.currentIndex++;
+                if (this.currentIndex < this.questions.length) {
+                    this.renderQuestion();
+                } else {
+                    this.showResults();
+                }
+            }
+
+            showResults() {
+                document.getElementById('view-game').classList.add('hidden');
+                document.getElementById('view-results').classList.remove('hidden');
+
+                const total = this.questions.length;
+                const correctCount = this.userAnswers.filter(a => a.isCorrect).length;
+                const accuracy = Math.round((correctCount / total) * 100);
+
+                document.getElementById('res-accuracy').innerText = `${accuracy}%`;
+                document.getElementById('res-score').innerText = this.score;
+                document.getElementById('res-streak').innerText = this.maxStreak;
+
+                const headline = document.getElementById('result-headline');
+                const badge = document.getElementById('result-badge');
+
+                if (accuracy >= 80) {
+                    headline.innerText = "Grammar Master!";
+                    badge.innerText = "Outstanding Performance!";
+                    audio.playFanfare();
+                    if (typeof confetti === 'function') {
+                        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+                    }
+                } else if (accuracy >= 50) {
+                    headline.innerText = "Great Effort!";
+                    badge.innerText = "Keep Practicing!";
+                } else {
+                    headline.innerText = "Keep Learning!";
+                    badge.innerText = "Practice Makes Perfect!";
+                }
+
+                // Render Review Items
+                const reviewList = document.getElementById('review-list');
+                reviewList.innerHTML = this.userAnswers.map((item, idx) => `
+                    <div class="p-3 rounded-xl border ${item.isCorrect ? 'bg-emerald-950/20 border-emerald-800/30' : 'bg-rose-950/20 border-rose-800/30'} text-xs md:text-sm">
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="font-bold text-slate-300">#${idx + 1} ${item.question}</span>
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold ${item.isCorrect ? 'bg-emerald-500/20 text-emerald-300' : 'bg-rose-500/20 text-rose-300'}">
+                                ${item.isCorrect ? 'Correct' : 'Incorrect'}
+                            </span>
+                        </div>
+                        <div class="text-slate-400 text-xs">
+                            ${!item.isCorrect ? `Your Answer: <span class="line-through text-rose-300">${item.userAns}</span> | ` : ''}
+                            Correct: <span class="font-bold text-emerald-300">${item.correctAns}</span>
+                        </div>
+                        <div class="text-[11px] text-slate-400 mt-1 italic border-t border-slate-800/50 pt-1">
+                            ${item.explanation}
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // Initialize Engine
+        const game = new GameEngine();
+    </script>
+</body>
+</html>
